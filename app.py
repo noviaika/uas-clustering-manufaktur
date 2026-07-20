@@ -31,6 +31,8 @@ Tujuannya adalah membantu tim *Quality Assurance* (QA) memprioritaskan segmen ca
 paling merugikan secara finansial, sehingga perbaikan proses produksi bisa lebih tepat sasaran.
 """)
 
+st.caption("📌 Disusun oleh: **[NOVIA IKA SAFITRI]** — NIM: **[E12.2024.01936]**")
+
 # ============================================================
 # 1. LOAD DATA
 # ============================================================
@@ -224,9 +226,38 @@ st.markdown("**Profil Rata-rata Tiap Klaster (Hierarchical)**")
 st.dataframe(profil_hc, use_container_width=True)
 
 # ============================================================
+# 7B. PERBANDINGAN K-MEANS VS HIERARCHICAL
+# ============================================================
+st.header("5. Perbandingan Hasil K-Means vs Hierarchical Clustering")
+
+crosstab = pd.crosstab(df['cluster_kmeans'], df['cluster_hierarchy'])
+crosstab.index.name = "K-Means"
+crosstab.columns.name = "Hierarchical"
+
+ccol1, ccol2 = st.columns([1, 1.3])
+with ccol1:
+    st.markdown("**Tabel Silang (Crosstab) Label Klaster**")
+    st.dataframe(crosstab, use_container_width=True)
+    jumlah_beda = (df['cluster_kmeans'] != df['cluster_hierarchy']).sum()
+    st.metric("Jumlah data dengan label klaster berbeda", f"{jumlah_beda} dari {len(df)}")
+
+with ccol2:
+    st.markdown("**Mengapa hasilnya bisa berbeda?**")
+    st.markdown("""
+- **K-Means** membagi data berdasarkan jarak ke titik pusat (*centroid*) yang dioptimalkan
+  secara iteratif — cenderung menghasilkan klaster berbentuk bulat/konveks dengan ukuran mirip.
+- **Hierarchical Clustering (Ward)** membangun kelompok secara bertahap dari bawah ke atas
+  berdasarkan penggabungan pasangan titik/klaster terdekat — lebih sensitif terhadap struktur
+  bertingkat dan tidak mengasumsikan bentuk klaster tertentu.
+- Perbedaan pendekatan dasar ini membuat titik-titik yang berada **di perbatasan antar klaster**
+  berpotensi mendapat label kelompok yang berbeda di antara dua metode, meskipun pola besar
+  (kelompok berisiko tinggi vs rendah) tetap konsisten di keduanya.
+""")
+
+# ============================================================
 # 8. INSIGHT BISNIS & REKOMENDASI
 # ============================================================
-st.header("5. Interpretasi Hasil & Insight Bisnis")
+st.header("6. Interpretasi Hasil & Insight Bisnis")
 
 # Urutkan klaster berdasarkan rata-rata repair_cost agar penamaan konsisten
 sorted_clusters = profil_kmeans.sort_values('repair_cost', ascending=False)
@@ -258,5 +289,17 @@ st.success("""
 perbaikan proses secara lebih efisien — fokus pada klaster berisiko finansial tinggi terlebih dahulu,
 alih-alih menangani seluruh laporan cacat secara seragam.
 """)
+
+st.divider()
+st.subheader("📥 Unduh Hasil Clustering")
+hasil_download = df[['defect_id', 'product_id', 'defect_type', 'severity', 'repair_cost',
+                      'cluster_kmeans', 'cluster_hierarchy']]
+csv_bytes = hasil_download.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label="Download CSV Hasil Clustering",
+    data=csv_bytes,
+    file_name="hasil_clustering_cacat_manufaktur.csv",
+    mime="text/csv"
+)
 
 st.caption("Dibuat untuk UAS Project Kecerdasan Buatan — Deployment & Streamlit Application")
