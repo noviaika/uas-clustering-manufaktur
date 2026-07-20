@@ -31,7 +31,7 @@ Tujuannya adalah membantu tim *Quality Assurance* (QA) memprioritaskan segmen ca
 paling merugikan secara finansial, sehingga perbaikan proses produksi bisa lebih tepat sasaran.
 """)
 
-st.caption("📌 Disusun oleh: **[NOVIA IKA SAFITRI]** — NIM: **[E12.2024.01936]**")
+st.caption("📌 Disusun oleh: **NOVIA IKA SAFITRI** — NIM: **E12.2024.01936**")
 
 # ============================================================
 # 1. LOAD DATA
